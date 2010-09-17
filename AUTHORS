@@ -1,6 +1,7 @@
 Main developer and maintainer:
 
 Thorbjørn Lindeijer <thorbjorn@lindeijer.nl>
+(Note: The main developer of this fork is Ben Wilhelm, zorba-mild@pavlovian.net, who is responsible for any changes compared to the Tiled main repo.)
 
 Contributors:
 
@@ -11,6 +12,7 @@ Edward Hutchins   (added automatic reloading of changed tileset images)
 Jeff Bland        (added Offset Map feature and fill tool)
 Michael Woerister (improvements to the object properties dialog)
 Roderic Morris    (added many icons and initial object group support)
+Ben Wilhelm       (Mild fork, work under development)
 
 Translators:
 
