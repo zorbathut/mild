@@ -1,6 +1,6 @@
 /*
  * changeproperties.cpp
- * Copyright 2008-2009, Thorbjørn Lindeijer <thorbjorn@lindeijer.nl>
+ * Copyright 2008-2010, Thorbjørn Lindeijer <thorbjorn@lindeijer.nl>
  *
  * This file is part of Tiled.
  *
@@ -22,12 +22,13 @@
 
 #include <QCoreApplication>
 
+using namespace Tiled;
 using namespace Tiled::Internal;
 
 ChangeProperties::ChangeProperties(const QString &kind,
-                                   QMap<QString, QString> *properties,
-                                   const QMap<QString, QString> &newProperties)
-    : mProperties(properties)
+                                   Object *object,
+                                   const Properties &newProperties)
+    : mObject(object)
     , mNewProperties(newProperties)
 {
     setText(QCoreApplication::translate("Undo Commands",
@@ -46,7 +47,7 @@ void ChangeProperties::undo()
 
 void ChangeProperties::swapProperties()
 {
-    const QMap<QString, QString> oldProperties = *mProperties;
-    *mProperties = mNewProperties;
+    const Properties oldProperties = mObject->properties();
+    mObject->setProperties(mNewProperties);
     mNewProperties = oldProperties;
 }
