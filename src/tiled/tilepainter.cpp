@@ -25,6 +25,8 @@
 #include "tilelayer.h"
 #include "map.h"
 
+#include <QDebug>
+
 using namespace Tiled;
 using namespace Tiled::Internal;
 
@@ -47,6 +49,8 @@ Tile *TilePainter::tileAt(int x, int y) const
 
 void TilePainter::setTile(int x, int y, Tile *tile)
 {
+    qDebug() << "tilepainter!";
+  
     const QRegion &selection = mMapDocument->tileSelection();
     if (!(selection.isEmpty() || selection.contains(QPoint(x, y))))
         return;
@@ -54,6 +58,8 @@ void TilePainter::setTile(int x, int y, Tile *tile)
     const int layerX = x - mTileLayer->x();
     const int layerY = y - mTileLayer->y();
 
+    qDebug() << "settin' stuff";
+    
     mTileLayer->setTile(layerX, layerY, tile);
     mMapDocument->emitRegionChanged(QRegion(x, y, 1, 1));
 }
@@ -271,8 +277,10 @@ bool TilePainter::isDrawable(int x, int y) const
 
 QRegion TilePainter::paintableRegion(const QRegion &region) const
 {
-    const QRegion bounds = QRegion(mTileLayer->bounds());
-    QRegion intersection = bounds.intersected(region);
+    //const QRegion bounds = QRegion(mTileLayer->bounds());
+    //QRegion intersection = bounds.intersected(region);
+  
+    QRegion intersection = region;
 
     const QRegion &selection = mMapDocument->tileSelection();
     if (!selection.isEmpty())
