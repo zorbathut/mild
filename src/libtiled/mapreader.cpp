@@ -466,7 +466,7 @@ void MapReaderPrivate::decodeBinaryLayerData(TileLayer *tileLayer,
 {
     QByteArray tileData = QByteArray::fromBase64(text.toLatin1());
     const int size = (tileLayer->width() * tileLayer->height()) * 4;
-
+  
     if (compression == QLatin1String("zlib")
         || compression == QLatin1String("gzip")) {
         tileData = decompress(tileData, size);

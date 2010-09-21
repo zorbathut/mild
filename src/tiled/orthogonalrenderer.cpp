@@ -27,6 +27,8 @@
 
 #include <cmath>
 
+#include <QtDebug>
+
 using namespace Tiled;
 using namespace Tiled::Internal;
 
@@ -118,10 +120,10 @@ void OrthogonalRenderer::drawTileLayer(QPainter *painter,
 
     painter->translate(layerPos);
 
-    int startX = 0;
-    int startY = 0;
-    int endX = layer->width();
-    int endY = layer->height();
+    int startX = layer->bounds().left();
+    int startY = layer->bounds().top();
+    int endX = layer->bounds().right() + 1;
+    int endY = layer->bounds().bottom() + 1;
 
     if (!exposed.isNull()) {
         const QSize maxTileSize = layer->maxTileSize();
@@ -130,10 +132,10 @@ void OrthogonalRenderer::drawTileLayer(QPainter *painter,
         QRectF rect = exposed.adjusted(-extraWidth, 0, 0, extraHeight);
         rect.translate(-layerPos);
 
-        startX = qMax((int) rect.x() / tileWidth, 0);
-        startY = qMax((int) rect.y() / tileHeight, 0);
-        endX = qMin((int) std::ceil(rect.right()) / tileWidth + 1, endX);
-        endY = qMin((int) std::ceil(rect.bottom()) / tileHeight + 1, endY);
+        startX = (int) rect.x() / tileWidth;
+        startY = (int) rect.y() / tileHeight;
+        endX = (int) std::ceil(rect.right()) / tileWidth + 1;
+        endY = (int) std::ceil(rect.bottom()) / tileHeight + 1;
     }
 
     for (int y = startY; y < endY; ++y) {

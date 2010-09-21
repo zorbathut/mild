@@ -11,7 +11,6 @@ ursa.token.rule{"mild_files", "#mild_file_list", function ()
   local fil = {}
   for item in ursa.token{"mild_file_list"}:gmatch("([^\n]+)") do
     table.insert(fil, item)
-    print(item)
   end
   return fil
 end}

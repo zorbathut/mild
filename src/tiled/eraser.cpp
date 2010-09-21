@@ -78,9 +78,6 @@ void Eraser::doErase(bool mergeable)
     TileLayer *tileLayer = currentTileLayer();
     const QPoint tilePos = tilePosition();
 
-    if (!tileLayer->bounds().contains(tilePos))
-        return;
-
     EraseTiles *erase = new EraseTiles(mapDocument, tileLayer,
                                        QRegion(tilePos.x(),
                                                tilePos.y(),

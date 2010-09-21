@@ -113,7 +113,7 @@ void ObjectGroup::offset(const QPoint &offset,
  */
 Layer *ObjectGroup::clone() const
 {
-    return initializeClone(new ObjectGroup(mName, mX, mY, mWidth, mHeight));
+    return initializeClone(new ObjectGroup(mName, mX, mY, mBounds.width(), mBounds.height()));
 }
 
 ObjectGroup *ObjectGroup::initializeClone(ObjectGroup *clone) const

@@ -29,8 +29,7 @@ using namespace Tiled;
 
 TileLayer::TileLayer(const QString &name, int x, int y, int width, int height):
     Layer(name, x, y, width, height),
-    mMaxTileSize(0, 0),
-    mTiles(width * height)
+    mMaxTileSize(0, 0)
 {
 }
 
@@ -38,12 +37,23 @@ QRegion TileLayer::region() const
 {
     QRegion region = bounds();
 
-    for (int y = 0; y < mHeight; ++y)
-        for (int x = 0; x < mWidth; ++x)
+    for (int y = mBounds.top(); y <= mBounds.bottom(); ++y)
+        for (int x = mBounds.left(); x <= mBounds.right(); ++x)
             if (!tileAt(x, y))
                 region -= QRegion(x + mX, y + mY, 1, 1);
 
     return region;
+}
+
+Tile *TileLayer::tileAt(int x, int y) const
+{
+    std::map<int, std::map<int, Tile *> >::const_iterator it = mTiles.find(y);
+    if (it == mTiles.end()) return NULL;
+  
+    std::map<int, Tile *>::const_iterator it2 = it->second.find(x);
+    if (it2 == it->second.end()) return NULL;
+  
+    return it2->second;
 }
 
 void TileLayer::setTile(int x, int y, Tile *tile)
@@ -61,12 +71,19 @@ void TileLayer::setTile(int x, int y, Tile *tile)
         }
     }
 
-    mTiles[x + y * mWidth] = tile;
+    // save a little RAM
+    if (tile) {
+      mBounds = mBounds.united(QRect(x, y, 1, 1));
+      
+      mTiles[y][x] = tile;
+    } else {
+      mTiles[y].erase(x);
+    }
 }
 
 TileLayer *TileLayer::copy(const QRegion &region) const
 {
-    const QRegion area = region.intersected(QRect(0, 0, width(), height()));
+    const QRegion area = region.intersected(bounds());
     const QRect bounds = region.boundingRect();
     const QRect areaBounds = area.boundingRect();
     const int offsetX = qMax(0, areaBounds.x() - bounds.x());
@@ -90,7 +107,6 @@ void TileLayer::merge(const QPoint &pos, const TileLayer *layer)
 {
     // Determine the overlapping area
     QRect area = QRect(pos, QSize(layer->width(), layer->height()));
-    area &= QRect(0, 0, width(), height());
 
     for (int y = area.top(); y <= area.bottom(); ++y)
         for (int x = area.left(); x <= area.right(); ++x)
@@ -100,10 +116,12 @@ void TileLayer::merge(const QPoint &pos, const TileLayer *layer)
 
 bool TileLayer::referencesTileset(Tileset *tileset) const
 {
-    for (int i = 0, i_end = mTiles.size(); i < i_end; ++i) {
-        const Tile *tile = mTiles.at(i);
-        if (tile && tile->tileset() == tileset)
-            return true;
+    for (int y = mBounds.top(); y <= mBounds.bottom(); ++y) {
+        for (int x = mBounds.left(); x <= mBounds.right(); ++x) {
+            const Tile *tile = tileAt(x, y);
+            if (tile && tile->tileset() == tileset)
+                return true;
+        }
     }
     return false;
 }
@@ -112,8 +130,8 @@ QRegion TileLayer::tilesetReferences(Tileset *tileset) const
 {
     QRegion region;
 
-    for (int y = 0; y < mHeight; ++y)
-        for (int x = 0; x < mWidth; ++x)
+    for (int y = mBounds.top(); y <= mBounds.bottom(); ++y)
+        for (int x = mBounds.left(); x <= mBounds.right(); ++x)
             if (const Tile *tile = tileAt(x, y))
                 if (tile->tileset() == tileset)
                     region += QRegion(x + mX, y + mY, 1, 1);
@@ -123,48 +141,39 @@ QRegion TileLayer::tilesetReferences(Tileset *tileset) const
 
 void TileLayer::removeReferencesToTileset(Tileset *tileset)
 {
-    for (int i = 0, i_end = mTiles.size(); i < i_end; ++i) {
-        const Tile *tile = mTiles.at(i);
-        if (tile && tile->tileset() == tileset)
-            mTiles.replace(i, 0);
+    for (int y = mBounds.top(); y <= mBounds.bottom(); ++y) {
+        for (int x = mBounds.left(); x <= mBounds.right(); ++x) {
+            const Tile *tile = tileAt(x, y);
+            if (tile && tile->tileset() == tileset)
+                setTile(x, y, NULL);
+        }
     }
 }
 
 void TileLayer::replaceReferencesToTileset(Tileset *oldTileset,
                                            Tileset *newTileset)
 {
-    for (int i = 0, i_end = mTiles.size(); i < i_end; ++i) {
-        const Tile *tile = mTiles.at(i);
-        if (tile && tile->tileset() == oldTileset)
-            mTiles.replace(i, newTileset->tileAt(tile->id()));
+    for (int y = mBounds.top(); y <= mBounds.bottom(); ++y) {
+        for (int x = mBounds.left(); x <= mBounds.right(); ++x) {
+            const Tile *tile = tileAt(x, y);
+            if (tile && tile->tileset() == oldTileset)
+                setTile(x, y, newTileset->tileAt(tile->id()));
+        }
     }
 }
 
 void TileLayer::resize(const QSize &size, const QPoint &offset)
 {
-    QVector<Tile*> newTiles(size.width() * size.height());
-
-    // Copy over the preserved part
-    const int startX = qMax(0, -offset.x());
-    const int startY = qMax(0, -offset.y());
-    const int endX = qMin(mWidth, size.width() - offset.x());
-    const int endY = qMin(mHeight, size.height() - offset.y());
-
-    for (int y = startY; y < endY; ++y) {
-        for (int x = startX; x < endX; ++x) {
-            const int index = x + offset.x() + (y + offset.y()) * size.width();
-            newTiles[index] = tileAt(x, y);
-        }
-    }
-
-    mTiles = newTiles;
-    Layer::resize(size, offset);
+    // We're currently NOPping this, I think the only part we care about is the offset
 }
 
 void TileLayer::offset(const QPoint &offset,
                        const QRect &bounds,
                        bool wrapX, bool wrapY)
 {
+    // . . . yeah let's NOP this also
+  
+  /*
     QVector<Tile*> newTiles(mWidth * mHeight);
 
     for (int y = 0; y < mHeight; ++y) {
@@ -203,13 +212,13 @@ void TileLayer::offset(const QPoint &offset,
         }
     }
 
-    mTiles = newTiles;
+    mTiles = newTiles;*/
 }
 
 bool TileLayer::isEmpty() const
 {
-    for (int y = 0; y < mHeight; ++y)
-        for (int x = 0; x < mWidth; ++x)
+    for (int y = mBounds.top(); y <= mBounds.bottom(); ++y)
+        for (int x = mBounds.left(); x <= mBounds.right(); ++x)
             if (tileAt(x, y))
                 return false;
 
@@ -223,7 +232,7 @@ bool TileLayer::isEmpty() const
  */
 Layer *TileLayer::clone() const
 {
-    return initializeClone(new TileLayer(mName, mX, mY, mWidth, mHeight));
+    return initializeClone(new TileLayer(mName, mX, mY, mBounds.width(), mBounds.height()));  // bleh
 }
 
 TileLayer *TileLayer::initializeClone(TileLayer *clone) const

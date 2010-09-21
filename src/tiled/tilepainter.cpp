@@ -54,9 +54,6 @@ void TilePainter::setTile(int x, int y, Tile *tile)
     const int layerX = x - mTileLayer->x();
     const int layerY = y - mTileLayer->y();
 
-    if (!mTileLayer->contains(layerX, layerY))
-        return;
-
     mTileLayer->setTile(layerX, layerY, tile);
     mMapDocument->emitRegionChanged(QRegion(x, y, 1, 1));
 }
@@ -267,12 +264,6 @@ bool TilePainter::isDrawable(int x, int y) const
 {
     const QRegion &selection = mMapDocument->tileSelection();
     if (!(selection.isEmpty() || selection.contains(QPoint(x, y))))
-        return false;
-
-    const int layerX = x - mTileLayer->x();
-    const int layerY = y - mTileLayer->y();
-
-    if (!mTileLayer->contains(layerX, layerY))
         return false;
 
     return true;

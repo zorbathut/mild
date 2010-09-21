@@ -27,8 +27,7 @@ Layer::Layer(const QString &name, int x, int y, int width, int height):
     mName(name),
     mX(x),
     mY(y),
-    mWidth(width),
-    mHeight(height),
+    mBounds(0, 0, width, height),
     mOpacity(1.0f),
     mVisible(true),
     mMap(0)
@@ -37,8 +36,7 @@ Layer::Layer(const QString &name, int x, int y, int width, int height):
 
 void Layer::resize(const QSize &size, const QPoint & /* offset */)
 {
-    mWidth = size.width();
-    mHeight = size.height();
+    mBounds.setSize(size);
 }
 
 /**

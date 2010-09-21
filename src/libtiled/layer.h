@@ -110,17 +110,17 @@ public:
     /**
      * Returns the width of this layer.
      */
-    int width() const { return mWidth; }
+    int width() const { return mBounds.width(); }
 
     /**
      * Returns the height of this layer.
      */
-    int height() const { return mHeight; }
+    int height() const { return mBounds.height(); }
 
     /**
      * Returns the bounds of this layer.
      */
-    QRect bounds() const { return QRect(mX, mY, mWidth, mHeight); }
+    QRect bounds() const { return QRect(mBounds.left() + mX, mBounds.top() + mY, mBounds.width(), mBounds.height()); }
 
     /**
      * Resizes this layer to \a size, while shifting its contents by \a offset.
@@ -149,10 +149,11 @@ protected:
     Layer *initializeClone(Layer *clone) const;
 
     QString mName;
+    // mX and mY are the origin offset, to make layer translation easy
+    // mBounds is the actual bounds that the layer consumes within itself
     int mX;
     int mY;
-    int mWidth;
-    int mHeight;
+    QRect mBounds;
     float mOpacity;
     bool mVisible;
     Map *mMap;

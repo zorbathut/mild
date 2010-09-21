@@ -29,6 +29,8 @@
 #include <QString>
 #include <QVector>
 
+#include <map>
+
 namespace Tiled {
 
 class Tile;
@@ -55,7 +57,7 @@ public:
      * Returns whether (x, y) is inside this map layer.
      */
     bool contains(int x, int y) const
-    { return x >= 0 && y >= 0 && x < mWidth && y < mHeight; }
+    { return mBounds.contains(x, y); }
 
     bool contains(const QPoint &point) const
     { return contains(point.x(), point.y()); }
@@ -70,8 +72,7 @@ public:
      * Returns the tile at the given coordinates. The coordinates have to
      * be within this layer.
      */
-    Tile *tileAt(int x, int y) const
-    { return mTiles.at(x + y * mWidth); }
+    Tile *tileAt(int x, int y) const;
 
     Tile *tileAt(const QPoint &point) const
     { return tileAt(point.x(), point.y()); }
@@ -150,7 +151,7 @@ protected:
 
 private:
     QSize mMaxTileSize;
-    QVector<Tile*> mTiles;
+    std::map<int, std::map<int, Tile*> > mTiles;
 };
 
 } // namespace Tiled
