@@ -30,6 +30,17 @@
 using namespace Tiled;
 using namespace Tiled::Internal;
 
+// are utility functions meant to be members? god, I don't know
+void RefreshMapSizes(MapDocument *map, TileLayer *tilelayer) {
+  // may have resized, may not have, so update things.
+  // Todo: tell it which map changed, or only emit if it really did resize?
+  
+  map->map()->setWidth(qMax(map->map()->width(), tilelayer->width()));
+  map->map()->setHeight(qMax(map->map()->height(), tilelayer->height()));
+  
+  map->emitMapChanged();
+}
+
 TilePainter::TilePainter(MapDocument *mapDocument, TileLayer *tileLayer)
     : mMapDocument(mapDocument)
     , mTileLayer(tileLayer)
@@ -49,18 +60,17 @@ Tile *TilePainter::tileAt(int x, int y) const
 
 void TilePainter::setTile(int x, int y, Tile *tile)
 {
-    qDebug() << "tilepainter!";
-  
     const QRegion &selection = mMapDocument->tileSelection();
     if (!(selection.isEmpty() || selection.contains(QPoint(x, y))))
         return;
 
     const int layerX = x - mTileLayer->x();
     const int layerY = y - mTileLayer->y();
-
-    qDebug() << "settin' stuff";
     
     mTileLayer->setTile(layerX, layerY, tile);
+    
+    RefreshMapSizes(mMapDocument, mTileLayer);
+    
     mMapDocument->emitRegionChanged(QRegion(x, y, 1, 1));
 }
 
@@ -82,6 +92,8 @@ void TilePainter::setTiles(int x, int y, TileLayer *tiles, const QRegion &mask)
         }
     }
 
+    RefreshMapSizes(mMapDocument, mTileLayer);
+    
     mMapDocument->emitRegionChanged(region);
 }
 
@@ -106,7 +118,9 @@ void TilePainter::drawTiles(int x, int y, TileLayer *tiles)
             }
         }
     }
-
+    
+    RefreshMapSizes(mMapDocument, mTileLayer);
+    
     mMapDocument->emitRegionChanged(region);
 }
 
@@ -140,6 +154,8 @@ void TilePainter::drawStamp(const TileLayer *stamp,
         }
     }
 
+    RefreshMapSizes(mMapDocument, mTileLayer);
+    
     mMapDocument->emitRegionChanged(region);
 }
 

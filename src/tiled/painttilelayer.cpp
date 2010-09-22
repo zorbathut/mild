@@ -102,6 +102,6 @@ bool PaintTileLayer::mergeWith(const QUndoCommand *other)
                 mErased->setTile(x - mX,
                                  y - mY,
                                  o->mErased->tileAt(x - o->mX, y - o->mY));
-
+    
     return true;
 }

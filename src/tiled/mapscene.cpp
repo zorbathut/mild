@@ -257,6 +257,8 @@ void MapScene::currentLayerChanged()
     updateInteractionMode();
 }
 
+#include <QtDebug>
+
 /**
  * Adapts the scene rect and layers to the new map size.
  */
@@ -265,6 +267,8 @@ void MapScene::mapChanged()
     const QSize mapSize = mMapDocument->renderer()->mapSize();
     setSceneRect(0, 0, mapSize.width(), mapSize.height());
 
+    qDebug() << "Map changed!";
+  
     foreach (QGraphicsItem *item, mLayerItems) {
         if (TileLayerItem *tli = dynamic_cast<TileLayerItem*>(item))
             tli->syncWithTileLayer();

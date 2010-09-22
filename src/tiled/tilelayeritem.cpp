@@ -45,8 +45,12 @@ TileLayerItem::TileLayerItem(TileLayer *layer, MapRenderer *renderer)
 
 void TileLayerItem::syncWithTileLayer()
 {
-    prepareGeometryChange();
-    mBoundingRect = mRenderer->boundingRect(mLayer->bounds());
+    // This might be called many extra times, so we'll be a little careful with poking QT and making it refresh excessively often.
+    QRectF newbound = mRenderer->boundingRect(mLayer->bounds());
+    if(newbound != mBoundingRect) {
+      prepareGeometryChange();
+      mBoundingRect = newbound;
+    }
 }
 
 QRectF TileLayerItem::boundingRect() const
