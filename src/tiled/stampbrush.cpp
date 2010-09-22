@@ -188,11 +188,6 @@ void StampBrush::doPaint(bool mergeable)
     TileLayer *tileLayer = currentTileLayer();
     Q_ASSERT(tileLayer);
 
-    if (!tileLayer->bounds().intersects(QRect(mStampX, mStampY,
-                                              mStamp->width(),
-                                              mStamp->height())))
-        return;
-
     PaintTileLayer *paint = new PaintTileLayer(mMapDocument, tileLayer,
                                                mStampX, mStampY, mStamp);
     paint->setMergeable(mergeable);
