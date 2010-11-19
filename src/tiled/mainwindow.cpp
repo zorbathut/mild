@@ -1149,7 +1149,7 @@ void MainWindow::saveQuickStamp(int index)
     }
 
     Map *copyMap = new Map(map->orientation(),
-                           copy->width(), copy->height(),
+                           QRect(0, 0, 0, 0),
                            map->tileWidth(), map->tileHeight());
 
     copyMap->addLayer(copy);

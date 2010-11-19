@@ -108,7 +108,7 @@ bool AutoMapper::setupRuleMapLayers()
         if (!t) {
             const int index = mMapWork->layerCount();
             t = new TileLayer(name, 0, 0,
-                              mMapWork->width(), mMapWork->height());
+                              mMapWork->size());
             mMapDocument->undoStack()->push(
                         new AddLayer(mMapDocument, index, t));
             mMapDocument->setCurrentLayer(index);
@@ -272,8 +272,8 @@ bool AutoMapper::setupRuleList()
 {
     mRules.clear();
 
-    for (int y = 1; y < mMapRules->height(); y++ ) {
-        for (int x = 1; x < mMapRules->width();  x++ ) {
+    for (int y = 1; y < mMapRules->size().right(); y++ ) {
+        for (int x = 1; x < mMapRules->size().bottom();  x++ ) {
             if (mLayerRuleRegions->tileAt(x, y)
                     && !isPartOfExistingRule(QPoint(x, y))) {
                 mRules << createRule(x, y);
@@ -550,8 +550,8 @@ static bool compareLayerTo(TileLayer *l1, QList<TileLayer*> listYes,
 
 void AutoMapper::applyRule(const QRegion &rule)
 {
-    const int max_x = mMapWork->width() - rule.boundingRect().left();
-    const int max_y = mMapWork->height() - rule.boundingRect().top();
+    const int max_x = mMapWork->size().right() - rule.boundingRect().left();
+    const int max_y = mMapWork->size().bottom() - rule.boundingRect().top();
 
     for (int y = - rule.boundingRect().top(); y <= max_y; y++)
         for (int x = - rule.boundingRect().left(); x <= max_x; x++)

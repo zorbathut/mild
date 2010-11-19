@@ -229,7 +229,7 @@ void StampBrush::configureBrush(const QVector<QPoint> &list)
     Map *map = mapDocument()->map();
 
     TileLayer *stamp = new TileLayer(QString(), 0, 0,
-                                     map->width(), map->height());
+                                     map->size());
 
     foreach (QPoint p, list) {
         const QRegion update = stampRegion.translated(p.x() - mStampX,
@@ -352,7 +352,7 @@ void StampBrush::doPaint(bool mergeable, int whereX, int whereY)
     TileLayer *tileLayer = currentTileLayer();
     Q_ASSERT(tileLayer);
 
-    PaintTileLayer *paint = new PaintTileLayer(mMapDocument, tileLayer,
+    PaintTileLayer *paint = new PaintTileLayer(mapDocument(), tileLayer,
                                                whereX, whereY, brushItem()->tileLayer());
 
     paint->setMergeable(mergeable);

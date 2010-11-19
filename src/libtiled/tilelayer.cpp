@@ -35,12 +35,12 @@ TileLayer::TileLayer(const QString &name, int x, int y, QRect size):
 
 QRegion TileLayer::region() const
 {
-    QRegion region(size());
+    QRegion region;
 
     for (int y = mSize.top(); y <= mSize.bottom(); ++y)
         for (int x = mSize.left(); x <= mSize.right(); ++x)
-            if (!tileAt(x, y))
-                region -= QRegion(x + mX, y + mY, 1, 1);
+            if (tileAt(x, y))
+                region += QRegion(x + mX, y + mY, 1, 1);
 
     return region;
 }
@@ -118,9 +118,12 @@ QSet<Tileset*> TileLayer::usedTilesets() const
 {
     QSet<Tileset*> tilesets;
 
-    for (int i = 0, i_end = mTiles.size(); i < i_end; ++i)
-        if (const Tile *tile = mTiles.at(i))
-            tilesets.insert(tile->tileset());
+    for (int y = mSize.top(); y <= mSize.bottom(); ++y) {
+        for (int x = mSize.left(); x <= mSize.right(); ++x) {
+            if (const Tile *tile = tileAt(x, y))
+                tilesets.insert(tile->tileset());
+        }
+    }
 
     return tilesets;
 }

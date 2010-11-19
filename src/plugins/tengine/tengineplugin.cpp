@@ -58,8 +58,8 @@ bool TenginePlugin::write(const Tiled::Map *map, const QString &fileName)
         out << line << endl;
     }
 
-    const int width = map->width();
-    const int height = map->height();
+    const int width = map->size().right();
+    const int height = map->size().bottom();
 
     QList<QString> asciiMap;
     QHash<QString, Tiled::Properties> cachedTiles;
