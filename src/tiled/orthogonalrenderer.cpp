@@ -32,10 +32,13 @@
 using namespace Tiled;
 using namespace Tiled::Internal;
 
-QSize OrthogonalRenderer::mapSize() const
+QRect OrthogonalRenderer::mapSize() const
 {
-    return QSize(map()->width() * map()->tileWidth(),
-                 map()->height() * map()->tileHeight());
+    return QRect(
+                 map()->size().left() * map()->tileWidth() / 2,
+                 map()->size().top() * map()->tileHeight() / 2,
+                 (map()->size().left() + map()->size().width()) * map()->tileWidth() / 2,
+                 (map()->size().top() + map()->size().height()) * map()->tileHeight() / 2);
 }
 
 QRect OrthogonalRenderer::boundingRect(const QRect &rect) const
@@ -84,9 +87,9 @@ void OrthogonalRenderer::drawGrid(QPainter *painter, const QRectF &rect) const
     const int startX = (int) (rect.x() / tileWidth) * tileWidth;
     const int startY = (int) (rect.y() / tileHeight) * tileHeight;
     const int endX = qMin((int) std::ceil(rect.right()),
-                          map()->width() * tileWidth + 1);
+                          map()->size().width() * tileWidth + 1);
     const int endY = qMin((int) std::ceil(rect.bottom()),
-                          map()->height() * tileHeight + 1);
+                          map()->size().height() * tileHeight + 1);
 
     QColor gridColor(Qt::black);
     gridColor.setAlpha(128);

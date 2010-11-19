@@ -45,7 +45,7 @@ public:
     /**
      * Constructor.
      */
-    TileLayer(const QString &name, int x, int y, int width, int height);
+    TileLayer(const QString &name, int x, int y, QRect size);
 
     /**
      * Returns the maximum tile size of this layer. Used by the layer
@@ -57,7 +57,7 @@ public:
      * Returns whether (x, y) is inside this map layer.
      */
     bool contains(int x, int y) const
-    { return mBounds.contains(x, y); }
+    { return mSize.contains(x, y); }
 
     bool contains(const QPoint &point) const
     { return contains(point.x(), point.y()); }
@@ -125,7 +125,7 @@ public:
      *
      * \sa Layer::resize()
      */
-    virtual void resize(const QSize &size, const QPoint &offset);
+    //virtual void resize(const QSize &size, const QPoint &offset);
 
     /**
      * Offsets the objects in this group by \a offset, within \bounds
@@ -133,9 +133,10 @@ public:
      *
      * \sa Layer::offset()
      */
+     /*
     virtual void offset(const QPoint &offset,
                         const QRect &bounds,
-                        bool wrapX, bool wrapY);
+                        bool wrapX, bool wrapY);*/
 
     /**
      * Returns true if all tiles in the layer are empty.

@@ -156,8 +156,7 @@ void TilesetDock::selectionChanged()
 
     // Create a tile layer from the current selection
     TileLayer *tileLayer = new TileLayer(QString(), 0, 0,
-                                         maxX - minX + 1,
-                                         maxY - minY + 1);
+                                         QRect(0, 0, maxX - minX + 1, maxY - minY + 1));
 
     const TilesetModel *model = static_cast<const TilesetModel*>(s->model());
     foreach (const QModelIndex &index, indexes) {

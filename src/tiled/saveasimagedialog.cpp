@@ -101,6 +101,7 @@ SaveAsImageDialog::~SaveAsImageDialog()
 
 void SaveAsImageDialog::accept()
 {
+  /*
     const QString fileName = mUi->fileNameEdit->text();
     if (fileName.isEmpty())
         return;
@@ -172,7 +173,7 @@ void SaveAsImageDialog::accept()
     s->setValue(QLatin1String(CURRENT_SCALE_KEY), useCurrentScale);
     s->setValue(QLatin1String(DRAW_GRID_KEY), drawTileGrid);
 
-    QDialog::accept();
+    QDialog::accept();*/
 }
 
 void SaveAsImageDialog::browse()

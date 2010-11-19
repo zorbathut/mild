@@ -44,9 +44,9 @@ public:
     virtual ~MapRenderer() {}
 
     /**
-     * Returns the size in pixels of the map associated with this renderer.
+     * Returns the size in pixels of the map associated with this renderer, based around that kind of imaginary 0,0 center coordinate
      */
-    virtual QSize mapSize() const = 0;
+    virtual QRect mapSize() const = 0;
 
     /**
      * Returns the bounding rectangle in pixels of the given \a rect given in

@@ -75,10 +75,10 @@ MapDocument *NewMapDialog::createMap()
     const int orientation = mUi->orientation->currentIndex();
 
     Map *map = new Map((orientation == 0) ? Map::Orthogonal : Map::Isometric,
-                       mapWidth, mapHeight, tileWidth, tileHeight);
+                       QRect(0, 0, mapWidth, mapHeight), tileWidth, tileHeight);
 
     // Add one filling tile layer to new maps
-    map->addLayer(new TileLayer(tr("Tile Layer 1"), 0, 0, mapWidth, mapHeight));
+    map->addLayer(new TileLayer(tr("Tile Layer 1"), 0, 0, map->size()));
 
     // Store settings for next time
     QSettings *s = Preferences::instance()->settings();

@@ -47,13 +47,13 @@ void ResizeMap::redo()
 
 void ResizeMap::swapSize()
 {
-    Map *map = mMapDocument->map();
+/*    Map *map = mMapDocument->map();
     QSize oldSize(map->width(), map->height());
     map->setWidth(mSize.width());
     map->setHeight(mSize.height());
     mSize = oldSize;
 
-    mMapDocument->emitMapChanged();
+    mMapDocument->emitMapChanged();*/
 }
 
 } // namespace Internal

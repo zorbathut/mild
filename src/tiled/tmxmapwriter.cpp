@@ -149,8 +149,10 @@ void TmxMapWriter::writeMap(QXmlStreamWriter &w, const Map *map)
     w.writeAttribute(QLatin1String("version"), QLatin1String("1.0"));
     if (!orientation.isEmpty())
         w.writeAttribute(QLatin1String("orientation"), orientation);
-    w.writeAttribute(QLatin1String("width"), QString::number(map->width()));
-    w.writeAttribute(QLatin1String("height"), QString::number(map->height()));
+    w.writeAttribute(QLatin1String("top"), QString::number(map->size().top()));
+    w.writeAttribute(QLatin1String("left"), QString::number(map->size().left()));
+    w.writeAttribute(QLatin1String("width"), QString::number(map->size().width()));
+    w.writeAttribute(QLatin1String("height"), QString::number(map->size().height()));
     w.writeAttribute(QLatin1String("tilewidth"),
                      QString::number(map->tileWidth()));
     w.writeAttribute(QLatin1String("tileheight"),

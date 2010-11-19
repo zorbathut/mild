@@ -28,8 +28,8 @@
 using namespace Tiled;
 
 ObjectGroup::ObjectGroup(const QString &name,
-                         int x, int y, int width, int height)
-    : Layer(name, x, y, width, height)
+                         int x, int y, QRect size)
+    : Layer(name, x, y, size)
 {
 }
 
@@ -59,7 +59,7 @@ int ObjectGroup::removeObject(MapObject *object)
     object->setObjectGroup(0);
     return index;
 }
-
+/*
 void ObjectGroup::resize(const QSize &size, const QPoint &offset)
 {
     Layer::resize(size, offset);
@@ -71,7 +71,8 @@ void ObjectGroup::resize(const QSize &size, const QPoint &offset)
         object->setPosition(pos);
     }
 }
-
+*/
+/*
 void ObjectGroup::offset(const QPoint &offset,
                          const QRect &bounds,
                          bool wrapX, bool wrapY)
@@ -104,7 +105,7 @@ void ObjectGroup::offset(const QPoint &offset,
 
         object->setPosition(newPos);
     }
-}
+}*/
 
 /**
  * Returns a duplicate of this ObjectGroup.
@@ -113,7 +114,7 @@ void ObjectGroup::offset(const QPoint &offset,
  */
 Layer *ObjectGroup::clone() const
 {
-    return initializeClone(new ObjectGroup(mName, mX, mY, mBounds.width(), mBounds.height()));
+    return initializeClone(new ObjectGroup(mName, mX, mY, mSize));
 }
 
 ObjectGroup *ObjectGroup::initializeClone(ObjectGroup *clone) const

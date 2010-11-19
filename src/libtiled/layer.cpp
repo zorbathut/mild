@@ -23,21 +23,23 @@
 
 using namespace Tiled;
 
-Layer::Layer(const QString &name, int x, int y, int width, int height):
+Layer::Layer(const QString &name, int x, int y, QRect size):
     mName(name),
     mX(x),
     mY(y),
-    mBounds(0, 0, width, height),
+    mSize(size),
     mOpacity(1.0f),
     mVisible(true),
     mMap(0)
 {
 }
 
-void Layer::resize(const QSize &size, const QPoint & /* offset */)
+/*
+void Layer::resize(const QSize &size, const QPoint &offset)
 {
-    mBounds.setSize(size);
+    mSize.setSize(size);
 }
+*/
 
 /**
  * A helper function for initializing the members of the given instance to

@@ -30,10 +30,9 @@
 using namespace Tiled;
 
 Map::Map(Orientation orientation,
-         int width, int height, int tileWidth, int tileHeight):
+         QRect size, int tileWidth, int tileHeight):
     mOrientation(orientation),
-    mWidth(width),
-    mHeight(height),
+    mSize(size),
     mTileWidth(tileWidth),
     mTileHeight(tileHeight),
     mMaxTileSize(tileWidth, tileHeight)
@@ -138,7 +137,7 @@ bool Map::isTilesetUsed(Tileset *tileset) const
 
 Map *Map::clone() const
 {
-    Map *o = new Map(mOrientation, mWidth, mHeight, mTileWidth, mTileHeight);
+    Map *o = new Map(mOrientation, mSize, mTileWidth, mTileHeight);
     o->mMaxTileSize = mMaxTileSize;
     foreach (Layer *layer, mLayers)
         o->addLayer(layer->clone());

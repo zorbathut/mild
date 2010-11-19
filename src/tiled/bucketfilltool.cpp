@@ -119,18 +119,17 @@ void BucketFillTool::tilePositionChanged(const QPoint &tilePos)
     mFillOverlay = new TileLayer(QString(),
                                  tileLayer->x(),
                                  tileLayer->y(),
-                                 tileLayer->width(),
-                                 tileLayer->height());
+                                 QRect(0, 0, 0, 0));
 
     // Paint the new overlay
     TilePainter tilePainter(mMapDocument, mFillOverlay);
     tilePainter.drawStamp(mStamp, mFillRegion);
 
     // Crop the overlay to the smallest possible size
-    const QRect fillBounds = mFillRegion.boundingRect();
+    /*const QRect fillBounds = mFillRegion.boundingRect();
     mFillOverlay->resize(fillBounds.size(), -fillBounds.topLeft());
     mFillOverlay->setX(fillBounds.x());
-    mFillOverlay->setY(fillBounds.y());
+    mFillOverlay->setY(fillBounds.y());*/
 
     // Update the brush item to draw the overlay
     brushItem()->setTileLayer(mFillOverlay);

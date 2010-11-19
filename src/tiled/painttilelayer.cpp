@@ -82,9 +82,10 @@ bool PaintTileLayer::mergeWith(const QUndoCommand *other)
 
     // Resize the erased tiles and source layers when necessary
     if (bounds != combinedBounds) {
-        const QPoint shift = bounds.topLeft() - combinedBounds.topLeft();
+        Q_ASSERT(false); // not quite sure what causes this
+        /*const QPoint shift = bounds.topLeft() - combinedBounds.topLeft();
         mErased->resize(combinedBounds.size(), shift);
-        mSource->resize(combinedBounds.size(), shift);
+        mSource->resize(combinedBounds.size(), shift);*/
     }
 
     mX = combinedBounds.left();

@@ -75,7 +75,7 @@ QRect OffsetMapDialog::affectedBoundingRect() const
 
     switch (boundsSelection()) {
     case WholeMap:
-        boundingRect = QRect(QPoint(0, 0), mMapDocument->map()->size());
+        boundingRect = QRect(mMapDocument->map()->size());
         break;
     case CurrentSelectionArea: {
         const QRegion &selection = mMapDocument->tileSelection();

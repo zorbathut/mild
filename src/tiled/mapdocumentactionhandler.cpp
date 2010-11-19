@@ -131,7 +131,7 @@ void MapDocumentActionHandler::selectAll()
         return;
 
     Map *map = mMapDocument->map();
-    QRect all(0, 0, map->width(), map->height());
+    QRect all = map->size();
     if (mMapDocument->tileSelection() == all)
         return;
 

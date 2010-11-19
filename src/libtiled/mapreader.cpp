@@ -229,7 +229,7 @@ Map *MapReaderPrivate::readMap()
                        .arg(orientationRef.toString()));
     }
 
-    mMap = new Map(orientation, mapWidth, mapHeight, tileWidth, tileHeight);
+    mMap = new Map(orientation, QRect(0, 0, mapWidth, mapHeight), tileWidth, tileHeight);
 
     while (readNextStartElement()) {
         if (xml.name() == "properties")
@@ -389,7 +389,7 @@ TileLayer *MapReaderPrivate::readLayer()
     const int width = atts.value(QLatin1String("width")).toString().toInt();
     const int height = atts.value(QLatin1String("height")).toString().toInt();
 
-    TileLayer *tileLayer = new TileLayer(name, x, y, width, height);
+    TileLayer *tileLayer = new TileLayer(name, x, y, QRect(0, 0, width, height));
     readLayerAttributes(tileLayer, atts);
 
     while (readNextStartElement()) {
@@ -581,7 +581,7 @@ ObjectGroup *MapReaderPrivate::readObjectGroup()
     const int width = atts.value(QLatin1String("width")).toString().toInt();
     const int height = atts.value(QLatin1String("height")).toString().toInt();
 
-    ObjectGroup *objectGroup = new ObjectGroup(name, x, y, width, height);
+    ObjectGroup *objectGroup = new ObjectGroup(name, x, y, QRect(0, 0, width, height));
     readLayerAttributes(objectGroup, atts);
 
     const QString color = atts.value(QLatin1String("color")).toString();

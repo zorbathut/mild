@@ -43,7 +43,7 @@ public:
     /**
      * Constructor.
      */
-    ObjectGroup(const QString &name, int x, int y, int width, int height);
+    ObjectGroup(const QString &name, int x, int y, QRect size);
 
     /**
      * Destructor.
@@ -81,7 +81,7 @@ public:
      *
      * \sa Layer::resize()
      */
-    virtual void resize(const QSize &size, const QPoint &offset);
+    //virtual void resize(const QSize &size, const QPoint &offset);
 
     /**
      * Offsets all objects within the group, and optionally wraps them. The
@@ -90,8 +90,9 @@ public:
      *
      * \sa Layer::offset()
      */
+     /*
     virtual void offset(const QPoint &offset, const QRect &bounds,
-                        bool wrapX, bool wrapY);
+                        bool wrapX, bool wrapY);*/
 
     /**
      * Returns the color of the object group, or an invalid color if no color

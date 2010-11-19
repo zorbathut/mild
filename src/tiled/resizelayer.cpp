@@ -43,7 +43,7 @@ ResizeLayer::ResizeLayer(MapDocument *mapDocument,
     // Create the resized layer (once)
     Layer *layer = mMapDocument->map()->layerAt(mIndex);
     mResizedLayer = layer->clone();
-    mResizedLayer->resize(size, offset);
+    //mResizedLayer->resize(size, offset);
 }
 
 ResizeLayer::~ResizeLayer()

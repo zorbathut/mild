@@ -27,6 +27,7 @@
 
 #include <QList>
 #include <QSize>
+#include <QRect>
 
 namespace Tiled {
 
@@ -65,7 +66,7 @@ public:
      * Constructor, taking map orientation, size and tile size as parameters.
      */
     Map(Orientation orientation,
-        int width, int height,
+        QRect size,
         int tileWidth, int tileHeight);
 
     /**
@@ -85,29 +86,14 @@ public:
     { mOrientation = orientation; }
 
     /**
-     * Returns the width of this map.
+     * Returns the size of this map.
      */
-    int width() const { return mWidth; }
-
+    QRect size() const { return mSize; }
+    
     /**
-     * Sets the width of this map.
+     * Sets the size of this map.
      */
-    void setWidth(int width) { mWidth = width; }
-
-    /**
-     * Returns the height of this map.
-     */
-    int height() const { return mHeight; }
-
-    /**
-     * Sets the height of this map.
-     */
-    void setHeight(int height) { mHeight = height; }
-
-    /**
-     * Returns the size of this map. Provided for convenience.
-     */
-    QSize size() const { return QSize(mWidth, mHeight); }
+    void setSize(const QRect &size) { mSize = size; } // this is perhaps of dubious reliability
 
     /**
      * Returns the tile width of this map.
@@ -235,8 +221,7 @@ private:
     void adoptLayer(Layer *layer);
 
     Orientation mOrientation;
-    int mWidth;
-    int mHeight;
+    QRect mSize;
     int mTileWidth;
     int mTileHeight;
     QSize mMaxTileSize;

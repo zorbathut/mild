@@ -138,8 +138,8 @@ void MapScene::refreshScene()
         return;
     }
 
-    const QSize mapSize = mMapDocument->renderer()->mapSize();
-    setSceneRect(0, 0, mapSize.width(), mapSize.height());
+    const QRect mapSize = mMapDocument->renderer()->mapSize();
+    setSceneRect(mapSize);
 
     const Map *map = mMapDocument->map();
     mLayerItems.resize(map->layerCount());
@@ -264,8 +264,8 @@ void MapScene::currentLayerChanged()
  */
 void MapScene::mapChanged()
 {
-    const QSize mapSize = mMapDocument->renderer()->mapSize();
-    setSceneRect(0, 0, mapSize.width(), mapSize.height());
+    const QRect mapSize = mMapDocument->renderer()->mapSize();
+    setSceneRect(mapSize);
 
     qDebug() << "Map changed!";
   

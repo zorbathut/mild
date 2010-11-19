@@ -44,41 +44,42 @@ OffsetLayer::OffsetLayer(MapDocument *mapDocument,
     , mOriginalLayer(0)
 {
     // Create the offset layer (once)
-    Layer *layer = mMapDocument->map()->layerAt(mIndex);
-    mOffsetLayer = layer->clone();
-    mOffsetLayer->offset(offset, bounds, wrapX, wrapY);
+    //Layer *layer = mMapDocument->map()->layerAt(mIndex);
+    //mOffsetLayer = layer->clone();
+    //mOffsetLayer->offset(offset, bounds, wrapX, wrapY);
 }
 
 OffsetLayer::~OffsetLayer()
 {
-    delete mOriginalLayer;
-    delete mOffsetLayer;
+    //delete mOriginalLayer;
+    //delete mOffsetLayer;
 }
 
 void OffsetLayer::undo()
 {
-    Q_ASSERT(!mOffsetLayer);
-    mOffsetLayer = swapLayer(mOriginalLayer);
-    mOriginalLayer = 0;
+    //Q_ASSERT(!mOffsetLayer);
+    //mOffsetLayer = swapLayer(mOriginalLayer);
+    //mOriginalLayer = 0;
 }
 
 void OffsetLayer::redo()
 {
-    Q_ASSERT(!mOriginalLayer);
-    mOriginalLayer = swapLayer(mOffsetLayer);
-    mOffsetLayer = 0;
+    //Q_ASSERT(!mOriginalLayer);
+    //mOriginalLayer = swapLayer(mOffsetLayer);
+    //mOffsetLayer = 0;
 }
 
 Layer *OffsetLayer::swapLayer(Layer *layer)
 {
-    const int currentIndex = mMapDocument->currentLayer();
+    //const int currentIndex = mMapDocument->currentLayer();
 
-    LayerModel *layerModel = mMapDocument->layerModel();
-    Layer *replaced = layerModel->takeLayerAt(mIndex);
-    layerModel->insertLayer(mIndex, layer);
+    //LayerModel *layerModel = mMapDocument->layerModel();
+    //Layer *replaced = layerModel->takeLayerAt(mIndex);
+    //layerModel->insertLayer(mIndex, layer);
 
-    if (mIndex == currentIndex)
-        mMapDocument->setCurrentLayer(mIndex);
+    //if (mIndex == currentIndex)
+        //mMapDocument->setCurrentLayer(mIndex);
 
-    return replaced;
+    //return replaced;
+    return NULL;
 }

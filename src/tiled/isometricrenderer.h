@@ -38,7 +38,7 @@ class IsometricRenderer : public MapRenderer
 public:
     IsometricRenderer(const Map *map) : MapRenderer(map) {}
 
-    QSize mapSize() const;
+    QRect mapSize() const;
 
     QRect boundingRect(const QRect &rect) const;
 

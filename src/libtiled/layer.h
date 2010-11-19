@@ -44,7 +44,7 @@ public:
     /**
      * Constructor.
      */
-    Layer(const QString &name, int x, int y, int width, int height);
+    Layer(const QString &name, int x, int y, QRect size);
 
     /**
      * Returns the name of this layer.
@@ -110,29 +110,30 @@ public:
     /**
      * Returns the width of this layer.
      */
-    int width() const { return mBounds.width(); }
+    int width() const { return mSize.width(); }
 
     /**
      * Returns the height of this layer.
      */
-    int height() const { return mBounds.height(); }
+    int height() const { return mSize.height(); }
 
     /**
      * Returns the bounds of this layer.
      */
-    QRect bounds() const { return QRect(mBounds.left() + mX, mBounds.top() + mY, mBounds.width(), mBounds.height()); }
+    QRect bounds() const { return QRect(mSize.left() + mX, mSize.top() + mY, mSize.width(), mSize.height()); }
 
     /**
      * Resizes this layer to \a size, while shifting its contents by \a offset.
      * Note that the position of the layer remains unaffected.
      */
-    virtual void resize(const QSize &size, const QPoint &offset);
+    //virtual void resize(const QSize &size, const QPoint &offset);
 
     /**
      * Offsets the layer by the given amount, and optionally wraps it around.
      */
+    /*
     virtual void offset(const QPoint &offset, const QRect &bounds,
-                        bool wrapX, bool wrapY) = 0;
+                        bool wrapX, bool wrapY) = 0;*/
 
     /**
      * Returns a duplicate of this layer. The caller is responsible for the
@@ -150,10 +151,10 @@ protected:
 
     QString mName;
     // mX and mY are the origin offset, to make layer translation easy
-    // mBounds is the actual bounds that the layer consumes within itself
+    // mSize is the actual size that the layer contains within itself
     int mX;
     int mY;
-    QRect mBounds;
+    QRect mSize;
     float mOpacity;
     bool mVisible;
     Map *mMap;

@@ -793,6 +793,8 @@ void MainWindow::resizeMap()
     if (!mMapDocument)
         return;
 
+    // we're just stubbing this out for now until we figure out how to deal with it
+    /*
     Map *map = mMapDocument->map();
 
     ResizeDialog resizeDialog(this);
@@ -803,7 +805,7 @@ void MainWindow::resizeMap()
         const QPoint &offset = resizeDialog.offset();
         if (newSize != map->size() || !offset.isNull())
             mMapDocument->resizeMap(newSize, offset);
-    }
+    }*/
 }
 
 void MainWindow::offsetMap()

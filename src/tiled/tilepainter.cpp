@@ -35,8 +35,7 @@ void RefreshMapSizes(MapDocument *map, TileLayer *tilelayer) {
   // may have resized, may not have, so update things.
   // Todo: tell it which map changed, or only emit if it really did resize?
   
-  map->map()->setWidth(qMax(map->map()->width(), tilelayer->width()));
-  map->map()->setHeight(qMax(map->map()->height(), tilelayer->height()));
+  map->map()->setSize(map->map()->size().united(tilelayer->bounds()));
   
   map->emitMapChanged();
 }
@@ -191,8 +190,8 @@ QRegion TilePainter::computeFillRegion(const QPoint &fillOrigin) const
     const Tile *matchTile = tileAt(fillOrigin.x(), fillOrigin.y());
 
     // Grab map dimensions for later use.
-    const int mapWidth = mMapDocument->map()->width();
-    const int mapHeight = mMapDocument->map()->height();
+    const int mapWidth = mMapDocument->map()->size().width();
+    const int mapHeight = mMapDocument->map()->size().height();
     const int mapSize = mapWidth * mapHeight;
 
     // Create a queue to hold tiles that need filling

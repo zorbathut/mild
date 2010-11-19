@@ -35,7 +35,7 @@ class OrthogonalRenderer : public MapRenderer
 public:
     OrthogonalRenderer(const Map *map) : MapRenderer(map) {}
 
-    QSize mapSize() const;
+    QRect mapSize() const;
 
     QRect boundingRect(const QRect &rect) const;
 
