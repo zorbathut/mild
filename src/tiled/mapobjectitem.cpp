@@ -174,6 +174,9 @@ MapObjectItem::MapObjectItem(MapObject *object, MapDocument *mapDocument,
 #if QT_VERSION >= 0x040600
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
 #endif
+
+    if (parent)
+        setEditable(parent->isEditable());
 }
 
 void MapObjectItem::syncWithMapObject()
@@ -198,6 +201,7 @@ void MapObjectItem::syncWithMapObject()
 
     mSyncing = true;
     setPos(pixelPos);
+    setZValue(pixelPos.y());
 
     if (mBoundingRect != bounds) {
         // Notify the graphics scene about the geometry change in advance
@@ -218,7 +222,11 @@ void MapObjectItem::setEditable(bool editable)
     mIsEditable = editable;
 
     setFlag(QGraphicsItem::ItemIsMovable, mIsEditable);
-    mResizeHandle->setVisible(mIsEditable);
+    mResizeHandle->setVisible(mIsEditable && !mObject->tile());
+    if (mIsEditable)
+        setCursor(Qt::SizeAllCursor);
+    else
+        unsetCursor();
 }
 
 QRectF MapObjectItem::boundingRect() const
@@ -275,13 +283,13 @@ void MapObjectItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     // Fill out moveToLayerMenu
     typedef QMap<QAction*, ObjectGroup*> MoveToLayerActionMap;
     MoveToLayerActionMap moveToLayerActions;
-    foreach (Layer* layer, mMapDocument->map()->layers()) {
-            ObjectGroup *objectGroup = layer->asObjectGroup();
-            if (!objectGroup || objectGroup == mObject->objectGroup())
-                continue;
+    foreach (Layer *layer, mMapDocument->map()->layers()) {
+        ObjectGroup *objectGroup = layer->asObjectGroup();
+        if (!objectGroup || objectGroup == mObject->objectGroup())
+            continue;
 
-            QAction *action = moveToLayerMenu->addAction(objectGroup->name());
-            moveToLayerActions.insert(action, objectGroup);
+        QAction *action = moveToLayerMenu->addAction(objectGroup->name());
+        moveToLayerActions.insert(action, objectGroup);
     }
 
     if (moveToLayerMenu->isEmpty()) {
@@ -371,6 +379,7 @@ QVariant MapObjectItem::itemChange(GraphicsItemChange change,
             const QPointF newPixelPos =
                     renderer->tileToPixelCoords(mOldObjectPos) + pixelDiff;
             mObject->setPosition(renderer->pixelToTileCoords(newPixelPos));
+            setZValue(newPixelPos.y());
         }
     }
 
@@ -391,11 +400,6 @@ MapDocument *MapObjectItem::mapDocument() const
 
 QColor MapObjectItem::color() const
 {
-    // Type color takes precedence
-    const Qt::GlobalColor typeColor = colorForType();
-    if (typeColor != Qt::transparent)
-        return typeColor;
-
     // Get color from object group
     const ObjectGroup *objectGroup = mObject->objectGroup();
     if (objectGroup && objectGroup->color().isValid())
@@ -403,30 +407,4 @@ QColor MapObjectItem::color() const
 
     // Fallback color
     return Qt::gray;
-}
-
-Qt::GlobalColor MapObjectItem::colorForType() const
-{
-    static const struct {
-        const char *type;
-        Qt::GlobalColor color;
-    } types[] = {
-        { "warp", Qt::cyan },
-        { "npc", Qt::yellow },
-        { "spawn", Qt::magenta },
-        { "particle_effect", Qt::green },
-        { 0, Qt::black }
-    };
-
-    Qt::GlobalColor color = Qt::transparent;
-    const QString &type = mType;
-
-    for (int i = 0; types[i].type; ++i) {
-        if (!type.compare(QLatin1String(types[i].type), Qt::CaseInsensitive)) {
-            color = types[i].color;
-            break;
-        }
-    }
-
-    return color;
 }

@@ -54,9 +54,8 @@ Map *ClipboardManager::map() const
     if (data.isEmpty())
         return 0;
 
-    const QString mapData = QString::fromUtf8(data);
     TmxMapReader reader;
-    return reader.fromString(mapData);
+    return reader.fromByteArray(data);
 }
 
 void ClipboardManager::setMap(const Map *map)
@@ -64,8 +63,7 @@ void ClipboardManager::setMap(const Map *map)
     TmxMapWriter mapWriter;
 
     QMimeData *mimeData = new QMimeData;
-    mimeData->setData(QLatin1String(TMX_MIMETYPE),
-                      mapWriter.toString(map).toUtf8());
+    mimeData->setData(QLatin1String(TMX_MIMETYPE), mapWriter.toByteArray(map));
 
     mClipboard->setMimeData(mimeData);
 }
@@ -96,15 +94,7 @@ void ClipboardManager::copySelection(const MapDocument *mapDocument)
                 map->tileWidth(), map->tileHeight());
 
     // Resolve the set of tilesets used by this layer
-    QSet<Tileset*> tilesets;
-    for (int y = 0; y < copy->height(); ++y) {
-        for (int x = 0; x < copy->width(); ++x) {
-            const Tile *tile = copy->tileAt(x, y);
-            if (tile)
-                tilesets.insert(tile->tileset());
-        }
-    }
-    foreach (Tileset *tileset, tilesets)
+    foreach (Tileset *tileset, copy->usedTilesets())
         copyMap.addTileset(tileset);
 
     copyMap.addLayer(copy);

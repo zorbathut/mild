@@ -24,7 +24,6 @@
 #include "maprenderer.h"
 
 namespace Tiled {
-namespace Internal {
 
 /**
  * An isometric map renderer.
@@ -33,7 +32,7 @@ namespace Internal {
  * such a way that the map will also be diamond shaped. The X axis points to
  * the bottom right while the Y axis points to the bottom left.
  */
-class IsometricRenderer : public MapRenderer
+class TILEDSHARED_EXPORT IsometricRenderer : public MapRenderer
 {
 public:
     IsometricRenderer(const Map *map) : MapRenderer(map) {}
@@ -70,7 +69,6 @@ private:
     QPolygonF tileRectToPolygon(const QRectF &rect) const;
 };
 
-} // namespace Internal
 } // namespace Tiled
 
 #endif // ISOMETRICRENDERER_H

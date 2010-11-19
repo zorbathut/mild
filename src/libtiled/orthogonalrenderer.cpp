@@ -30,7 +30,6 @@
 #include <QtDebug>
 
 using namespace Tiled;
-using namespace Tiled::Internal;
 
 QRect OrthogonalRenderer::mapSize() const
 {
@@ -59,10 +58,18 @@ QRectF OrthogonalRenderer::boundingRect(const MapObject *object) const
                       tileToPixelCoords(bounds.bottomRight()));
 
     // The -2 and +3 are to account for the pen width and shadow
-    if (rect.isNull())
+    if (object->tile()) {
+        const QPointF bottomLeft = rect.topLeft();
+        const QPixmap &img = object->tile()->image();
+        return QRectF(bottomLeft.x(),
+                      bottomLeft.y() - img.height(),
+                      img.width(),
+                      img.height()).adjusted(-1, -1, 1, 1);
+    } else if (rect.isNull()) {
         return rect.adjusted(-15 - 2, -25 - 2, 10 + 3, 10 + 3);
-    else
+    } else {
         return rect.adjusted(-2, -15 - 2, 3, 3);
+    }
 }
 
 QPainterPath OrthogonalRenderer::shape(const MapObject *object) const
@@ -72,10 +79,13 @@ QPainterPath OrthogonalRenderer::shape(const MapObject *object) const
                       tileToPixelCoords(bounds.bottomRight()));
 
     QPainterPath path;
-    if (rect.isNull())
+    if (object->tile()) {
+        path.addRect(boundingRect(object));
+    } else if (rect.isNull()) {
         path.addEllipse(rect.topLeft(), 20, 20);
-    else
+    } else {
         path.addRoundedRect(rect, 10, 10);
+    }
     return path;
 }
 
@@ -175,56 +185,52 @@ void OrthogonalRenderer::drawMapObject(QPainter *painter,
 {
     painter->save();
 
-    QColor brushColor = color;
-    brushColor.setAlpha(50);
-    QBrush brush(brushColor);
-
-    QPen pen(Qt::black);
-    pen.setWidth(3);
-    pen.setJoinStyle(Qt::RoundJoin);
-
-    // Make sure the line aligns nicely on the pixels
-    if (pen.width() % 2)
-        painter->translate(0.5, 0.5);
-
-    painter->setPen(pen);
-    painter->setRenderHint(QPainter::Antialiasing);
-    const QFontMetrics fm = painter->fontMetrics();
-
     const QRectF bounds = object->bounds();
-    const QRectF rect(tileToPixelCoords(bounds.topLeft()),
-                      tileToPixelCoords(bounds.bottomRight()));
+    QRectF rect(tileToPixelCoords(bounds.topLeft()),
+                tileToPixelCoords(bounds.bottomRight()));
+
     painter->translate(rect.topLeft());
+    rect.moveTopLeft(QPointF(0, 0));
 
-    if (rect.isNull())
+    if (object->tile())
     {
-        QString name = fm.elidedText(object->name(), Qt::ElideRight, 30);
+        const QPixmap &img = object->tile()->image();
+        const QPoint paintOrigin(0, -img.height());
+        painter->drawPixmap(paintOrigin, img);
 
-        // Draw the shadow
-        painter->drawEllipse(QRect(- 10 + 1, - 10 + 1, 20, 20));
-        painter->drawText(QPoint(-15 + 1, -15 + 1), name);
-
+        QPen pen(Qt::SolidLine);
+        painter->setPen(pen);
+        painter->drawRect(QRect(paintOrigin, img.size()));
+        pen.setStyle(Qt::DotLine);
         pen.setColor(color);
         painter->setPen(pen);
-        painter->setBrush(brush);
-        painter->drawEllipse(QRect(-10, -10, 20, 20));
-        painter->drawText(QPoint(-15, -15), name);
+        painter->drawRect(QRect(paintOrigin, img.size()));
     }
     else
     {
+        if (rect.isNull())
+            rect = QRectF(QPointF(-10, -10), QSizeF(20, 20));
+
+        const QFontMetrics fm = painter->fontMetrics();
         QString name = fm.elidedText(object->name(), Qt::ElideRight,
                                      rect.width() + 2);
 
+        painter->setRenderHint(QPainter::Antialiasing);
+
         // Draw the shadow
-        painter->drawRoundedRect(QRectF(QPointF(1, 1), rect.size()),
-                                 10.0, 10.0);
+        QPen pen(Qt::black, 2);
+        painter->setPen(pen);
+        painter->drawRect(rect.translated(QPointF(1, 1)));
         painter->drawText(QPoint(1, -5 + 1), name);
+
+        QColor brushColor = color;
+        brushColor.setAlpha(50);
+        QBrush brush(brushColor);
 
         pen.setColor(color);
         painter->setPen(pen);
         painter->setBrush(brush);
-        painter->drawRoundedRect(QRectF(QPointF(0, 0), rect.size()),
-                                 10.0, 10.0);
+        painter->drawRect(rect);
         painter->drawText(QPoint(0, -5), name);
     }
 

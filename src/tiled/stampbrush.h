@@ -1,6 +1,7 @@
 /*
  * stampbrush.h
  * Copyright 2009-2010, Thorbjørn Lindeijer <thorbjorn@lindeijer.nl>
+ * Copyright 2010 Stefan Beller <stefanbeller@googlemail.com>
  *
  * This file is part of Tiled.
  *
@@ -41,27 +42,21 @@ public:
     StampBrush(QObject *parent = 0);
     ~StampBrush();
 
-    void enable(MapScene *scene);
-
-    void tilePositionChanged(const QPoint &tilePos);
-
     void mousePressed(const QPointF &pos, Qt::MouseButton button,
                       Qt::KeyboardModifiers modifiers);
     void mouseReleased(const QPointF &pos, Qt::MouseButton button);
 
+    void modifiersChanged(Qt::KeyboardModifiers modifiers);
+
     void languageChanged();
 
     /**
-     * Sets the map document on which this brush operates. The correct map
-     * document needs to be set before calling setStamp().
-     */
-    void setMapDocument(MapDocument *mapDocument);
-
-    /**
-     * Sets the stamp that is drawn when painting. The StampBrush takes
+     * Sets the stamp that is drawn when painting. The stamp brush takes
      * ownership over the stamp layer.
      */
     void setStamp(TileLayer *stamp);
+
+    TileLayer *stamp() const { return mStamp; }
 
 signals:
     /**
@@ -71,23 +66,76 @@ signals:
      */
     void currentTilesChanged(const TileLayer *tiles);
 
+protected:
+    void tilePositionChanged(const QPoint &tilePos);
+
+    void mapDocumentChanged(MapDocument *oldDocument,
+                            MapDocument *newDocument);
+
 private:
     void beginPaint();
-    void endPaint();
-    void doPaint(bool mergeable);
+
+    /**
+     * Merges the tile layer of its brush item into the current map.
+     * mergeable determines if this can be merged with similar actions for undo.
+     * whereX and whereY give an offset where to merge the brush items tilelayer
+     * into the current map.
+     */
+    void doPaint(bool mergeable, int whereX, int whereY);
 
     void beginCapture();
     void endCapture();
     QRect capturedArea() const;
 
+    /**
+     * updates the variables mStampX and mStampY depending on the mouse pointers
+     * position.
+     */
     void updatePosition();
 
-    MapDocument *mMapDocument;
+    /**
+     * mStamp is a tile layer in which is the selection the user made
+     * either by rightclicking (Capture) or at the tilesetdock
+     */
     TileLayer *mStamp;
-    bool mPainting;
-    bool mCapturing;
+
     QPoint mCaptureStart;
     int mStampX, mStampY;
+
+    /**
+     * This updates the brush item.
+     * It tries to put at all given points a stamp of mStamp at the
+     * corresponding position.
+     * It also takes care, that no overlaps appear.
+     * So it will check for every point if it can place a stamp there without
+     * overlap.
+     */
+    void configureBrush(const QVector<QPoint> &list);
+
+    /**
+     * There are several options how the stamp utility can be used.
+     * It must be one of the following:
+     */
+    enum BrushBehavior {
+        Free,       // nothing special: you can move the mouse,
+                    // preview of the selection
+        Paint,      // left mouse pressed: free painting
+        Capture,    // right mouse pressed: capture a rectangle
+        Line,       // hold shift: a line
+        Circle      // hold Ctrl: a circle
+    };
+
+    /**
+     * This stores the current behavior.
+     */
+    BrushBehavior mBrushBehavior;
+
+    /**
+     * The last active position. Needed for drawing lines and circles.
+     * When drawing lines, this point will be one end.
+     * When drawing circles this will be the midpoint.
+     */
+    int mLastStampX, mLastStampY;
 };
 
 } // namespace Internal

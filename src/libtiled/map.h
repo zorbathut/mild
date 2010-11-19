@@ -143,7 +143,7 @@ public:
      * Convenience function that returns the number of layers of this map that
      * are object groups.
      */
-    int objectLayerCount() const;
+    int objectGroupCount() const;
 
     /**
      * Returns the layer at the specified index.
@@ -161,6 +161,12 @@ public:
      * Adds a layer to this map.
      */
     void addLayer(Layer *layer);
+
+    /**
+     * Returns the index of the layer given by \a layerName, or -1 if no
+     * layer with that name is found.
+     */
+    int indexOfLayer(const QString &layerName) const;
 
     /**
      * Adds a layer to this map, inserting it at the given index.
@@ -186,6 +192,12 @@ public:
      * Inserts \a tileset at \a index in the list of tilesets used by this map.
      */
     void insertTileset(int index, Tileset *tileset);
+
+    /**
+     * Returns the index of the given \a tileset, or -1 if it is not used in
+     * this map.
+     */
+    int indexOfTileset(Tileset *tileset) const;
 
     /**
      * Removes the tileset at \a index from this map.

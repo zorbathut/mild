@@ -35,7 +35,7 @@ TileLayer::TileLayer(const QString &name, int x, int y, QRect size):
 
 QRegion TileLayer::region() const
 {
-    QRegion region = bounds();
+    QRegion region(size());
 
     for (int y = mSize.top(); y <= mSize.bottom(); ++y)
         for (int x = mSize.left(); x <= mSize.right(); ++x)
@@ -112,6 +112,17 @@ void TileLayer::merge(const QPoint &pos, const TileLayer *layer)
         for (int x = area.left(); x <= area.right(); ++x)
             if (Tile *tile = layer->tileAt(x - area.left(), y - area.top()))
                 setTile(x, y, tile);
+}
+
+QSet<Tileset*> TileLayer::usedTilesets() const
+{
+    QSet<Tileset*> tilesets;
+
+    for (int i = 0, i_end = mTiles.size(); i < i_end; ++i)
+        if (const Tile *tile = mTiles.at(i))
+            tilesets.insert(tile->tileset());
+
+    return tilesets;
 }
 
 bool TileLayer::referencesTileset(Tileset *tileset) const

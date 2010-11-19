@@ -12,11 +12,13 @@ Edward Hutchins   (added automatic reloading of changed tileset images)
 Jeff Bland        (added Offset Map feature and fill tool)
 Michael Woerister (improvements to the object properties dialog)
 Roderic Morris    (added many icons and initial object group support)
+Stefan Beller     (added the automap feature, quick stamps)
 Ben Wilhelm       (Mild fork, work under development)
 
 Translators:
 
 Antonio Ricci            (Italian)
+Bin Wu                   (Chinese)
 Hiroki Utsunomiya        (Japanese)
 Mauricio Muñoz Lucero    (Spanish)
 Petr Viktorin            (Czech)
@@ -35,5 +37,9 @@ Some Icons are Copyright (C) Yusuke Kamiyamane. All rights reserved.
 Licensed under a Creative Commons Attribution 3.0 license.
 See http://p.yusukekamiyamane.com/
 
-The perspective_walls.png tileset is by Clint Bellanger, released as Public
-Domain.
+Tilesets:
+
+perspective_walls.png - (C) Clint Bellanger, released as Public Domain
+tmw_desert_spacing.png - (C) The Mana World Development Team, GPL
+sewer_tileset.png - (C) Blues Brothers RPG developers, GPL
+isometric_tileset.png - Origin unknown

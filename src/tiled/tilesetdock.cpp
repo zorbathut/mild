@@ -26,6 +26,7 @@
 #include "map.h"
 #include "mapdocument.h"
 #include "movetileset.h"
+#include "tile.h"
 #include "tilelayer.h"
 #include "tileset.h"
 #include "tilesetmodel.h"
@@ -46,6 +47,7 @@ TilesetDock::TilesetDock(QWidget *parent):
     mMapDocument(0),
     mTabBar(new QTabBar),
     mViewStack(new QStackedWidget),
+    mCurrentTile(0),
     mCurrentTiles(0)
 {
     setObjectName(QLatin1String("TilesetDock"));
@@ -66,6 +68,8 @@ TilesetDock::TilesetDock(QWidget *parent):
             this, SLOT(removeTileset(int)));
     connect(mTabBar, SIGNAL(tabMoved(int,int)),
             this, SLOT(moveTileset(int,int)));
+    connect(mViewStack, SIGNAL(currentChanged(int)),
+            this, SLOT(updateCurrentTiles()));
 
     connect(TilesetManager::instance(), SIGNAL(tilesetChanged(Tileset*)),
             this, SLOT(tilesetChanged(Tileset*)));
@@ -127,15 +131,19 @@ void TilesetDock::insertTilesetView(int index, Tileset *tileset)
 
     connect(view->selectionModel(),
             SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
-            SLOT(selectionChanged()));
+            SLOT(updateCurrentTiles()));
 
     mTabBar->insertTab(index, tileset->name());
     mViewStack->insertWidget(index, view);
 }
 
-void TilesetDock::selectionChanged()
+void TilesetDock::updateCurrentTiles()
 {
-    const QItemSelectionModel *s = static_cast<QItemSelectionModel*>(sender());
+    const int viewIndex = mViewStack->currentIndex();
+    if (viewIndex == -1)
+        return;
+
+    const QItemSelectionModel *s = tilesetViewAt(viewIndex)->selectionModel();
     const QModelIndexList indexes = s->selection().indexes();
 
     if (indexes.isEmpty())
@@ -166,6 +174,7 @@ void TilesetDock::selectionChanged()
     }
 
     setCurrentTiles(tileLayer);
+    setCurrentTile(model->tileAt(s->currentIndex()));
 }
 
 void TilesetDock::tilesetChanged(Tileset *tileset)
@@ -200,6 +209,8 @@ void TilesetDock::tilesetRemoved(Tileset *tileset)
         cleaned->removeReferencesToTileset(tileset);
         setCurrentTiles(cleaned);
     }
+    if (mCurrentTile && mCurrentTile->tileset() == tileset)
+        setCurrentTile(0);
 }
 
 void TilesetDock::tilesetMoved(int from, int to)
@@ -283,6 +294,15 @@ void TilesetDock::setCurrentTiles(TileLayer *tiles)
     mCurrentTiles = tiles;
 
     emit currentTilesChanged(mCurrentTiles);
+}
+
+void TilesetDock::setCurrentTile(Tile *tile)
+{
+    if (mCurrentTile == tile)
+        return;
+
+    mCurrentTile = tile;
+    emit currentTileChanged(mCurrentTile);
 }
 
 void TilesetDock::retranslateUi()

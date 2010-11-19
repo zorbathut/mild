@@ -52,19 +52,22 @@ public:
     QAction *actionSelectAll() const { return mActionSelectAll; }
     QAction *actionSelectNone() const { return mActionSelectNone; }
     QAction *actionAddTileLayer() const { return mActionAddTileLayer; }
-    QAction *actionAddObjectLayer() const { return mActionAddObjectLayer; }
+    QAction *actionAddObjectGroup() const { return mActionAddObjectGroup; }
     QAction *actionDuplicateLayer() const { return mActionDuplicateLayer; }
     QAction *actionRemoveLayer() const { return mActionRemoveLayer; }
     QAction *actionMoveLayerUp() const { return mActionMoveLayerUp; }
     QAction *actionMoveLayerDown() const { return mActionMoveLayerDown; }
     QAction *actionLayerProperties() const { return mActionLayerProperties; }
 
+signals:
+    void mapDocumentChanged(MapDocument *mapDocument);
+
 public slots:
     void selectAll();
     void selectNone();
 
     void addTileLayer();
-    void addObjectLayer();
+    void addObjectGroup();
     void duplicateLayer();
     void moveLayerUp();
     void moveLayerDown();
@@ -79,7 +82,7 @@ private:
     QAction *mActionSelectAll;
     QAction *mActionSelectNone;
     QAction *mActionAddTileLayer;
-    QAction *mActionAddObjectLayer;
+    QAction *mActionAddObjectGroup;
     QAction *mActionDuplicateLayer;
     QAction *mActionRemoveLayer;
     QAction *mActionMoveLayerUp;

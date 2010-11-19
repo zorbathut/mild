@@ -10,14 +10,17 @@ win32 {
 } else {
     DESTDIR = ../../bin
 }
+contains(QT_CONFIG, opengl): QT += opengl
 
 DEFINES += QT_NO_CAST_FROM_ASCII \
     QT_NO_CAST_TO_ASCII
 
 macx {
-    LIBS += -L$$OUT_PWD/../../bin/Tiled.app/Contents/Frameworks
-} else {
+    QMAKE_LIBDIR_FLAGS += -L$$OUT_PWD/../../bin/Tiled.app/Contents/Frameworks
+} else:win32 {
     LIBS += -L$$OUT_PWD/../../lib
+} else {
+    QMAKE_LIBDIR_FLAGS += -L$$OUT_PWD/../../lib
 }
 
 # Make sure the Tiled executable can find libtiled
@@ -35,6 +38,7 @@ RCC_DIR = .rcc
 OBJECTS_DIR = .obj
 
 SOURCES += aboutdialog.cpp \
+    automap.cpp \
     brushitem.cpp \
     languagemanager.cpp \
     layerdock.cpp \
@@ -92,8 +96,6 @@ SOURCES += aboutdialog.cpp \
     abstracttool.cpp \
     changeselection.cpp \
     clipboardmanager.cpp \
-    orthogonalrenderer.cpp \
-    isometricrenderer.cpp \
     offsetlayer.cpp \
     offsetmapdialog.cpp \
     bucketfilltool.cpp \
@@ -102,8 +104,10 @@ SOURCES += aboutdialog.cpp \
     changeobjectgroupproperties.cpp \
     zoomable.cpp \
     addremovetileset.cpp \
-    movetileset.cpp
+    movetileset.cpp \
+    createobjecttool.cpp
 HEADERS += aboutdialog.h \
+    automap.h \
     brushitem.h \
     languagemanager.h \
     layerdock.h \
@@ -149,7 +153,6 @@ HEADERS += aboutdialog.h \
     resizemap.h \
     objectpropertiesdialog.h \
     changemapobject.h \
-    maprenderer.h \
     abstracttool.h \
     stampbrush.h \
     toolmanager.h \
@@ -164,8 +167,6 @@ HEADERS += aboutdialog.h \
     changeselection.h \
     clipboardmanager.h \
     undocommands.h \
-    orthogonalrenderer.h \
-    isometricrenderer.h \
     offsetlayer.h \
     offsetmapdialog.h \
     bucketfilltool.h \
@@ -174,7 +175,8 @@ HEADERS += aboutdialog.h \
     changeobjectgroupproperties.h \
     zoomable.h \
     addremovetileset.h \
-    movetileset.h
+    movetileset.h \
+    createobjecttool.h
 FORMS += aboutdialog.ui \
     mainwindow.ui \
     resizedialog.ui \

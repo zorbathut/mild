@@ -20,10 +20,15 @@
 
 #include "mapview.h"
 
+#include "preferences.h"
 #include "zoomable.h"
 
 #include <QWheelEvent>
 #include <QScrollBar>
+
+#ifndef QT_NO_OPENGL
+#include <QGLWidget>
+#endif
 
 using namespace Tiled::Internal;
 
@@ -33,6 +38,12 @@ MapView::MapView(QWidget *parent)
     , mZoomable(new Zoomable(this))
 {
     setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+
+#ifndef QT_NO_OPENGL
+    Preferences *prefs = Preferences::instance();
+    setUseOpenGL(prefs->useOpenGL());
+    connect(prefs, SIGNAL(useOpenGLChanged(bool)), SLOT(setUseOpenGL(bool)));
+#endif
 
     QWidget *v = viewport();
 
@@ -52,6 +63,26 @@ void MapView::adjustScale(qreal scale)
     setTransform(QTransform::fromScale(scale, scale));
     setRenderHint(QPainter::SmoothPixmapTransform,
                   mZoomable->smoothTransform());
+}
+
+void MapView::setUseOpenGL(bool useOpenGL)
+{
+#ifndef QT_NO_OPENGL
+    if (useOpenGL && QGLFormat::hasOpenGL()) {
+        if (!qobject_cast<QGLWidget*>(viewport())) {
+            QGLFormat format = QGLFormat::defaultFormat();
+            format.setDepth(false); // No need for a depth buffer
+            setViewport(new QGLWidget(format));
+        }
+    } else {
+        if (qobject_cast<QGLWidget*>(viewport()))
+            setViewport(0);
+    }
+
+    QWidget *v = viewport();
+    v->setAttribute(Qt::WA_StaticContents);
+    v->setMouseTracking(true);
+#endif
 }
 
 /**

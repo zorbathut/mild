@@ -35,12 +35,12 @@ namespace Tiled {
 
 class Map;
 class MapObject;
+class MapRenderer;
 class Tileset;
 
 namespace Internal {
 
 class LayerModel;
-class MapRenderer;
 class TileSelectionModel;
 
 /**
@@ -106,7 +106,7 @@ public:
 
     enum LayerType {
         TileLayerType,
-        ObjectLayerType
+        ObjectGroupType
     };
     void addLayer(LayerType layerType);
     void duplicateLayer();
@@ -144,6 +144,19 @@ public:
      * Sets the selected area of tiles.
      */
     void setTileSelection(const QRegion &selection);
+
+    /**
+     * Makes sure the all tilesets which are used at the given \a map will be
+     * present in the map document.
+     *
+     * To reach the aim, all similar tilesets will be replaced by the version
+     * in the current map document and all missing tilesets will be added to
+     * the current map document.
+     *
+     * \warning This method assumes that the tilesets in \a map are managed by
+     *          the TilesetManager!
+     */
+    void unifyTilesets(Map *map);
 
     void emitMapChanged();
 

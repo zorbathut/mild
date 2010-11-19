@@ -3,6 +3,7 @@
  * Copyright 2008-2010, Thorbjørn Lindeijer <thorbjorn@lindeijer.nl>
  * Copyright 2008, Roderic Morris <roderic@ccs.neu.edu>
  * Copyright 2009-2010, Jeff Bland <jksb@member.fsf.org>
+ * Copyright 2010, Stefan Beller <stefanbeller@googlemail.com>
  *
  * This file is part of Tiled.
  *
@@ -110,6 +111,7 @@ private slots:
     void resizeMap();
     void offsetMap();
     void editMapProperties();
+    void autoMap();
     void updateModified();
     void updateActions();
     void updateZoomLabel(qreal scale);
@@ -121,6 +123,9 @@ private slots:
 
     void setStampBrush(const TileLayer *tiles);
     void updateStatusInfoLabel(const QString &statusInfo);
+
+    void selectQuickStamp(int index);
+    void saveQuickStamp(int index);
 
 private:
     /**
@@ -179,6 +184,11 @@ private:
     QAction *mRecentFiles[MaxRecentFiles];
 
     QMenu *mLayerMenu;
+
+    QVector<Map*> mQuickStamps;
+    void setupQuickStamps();
+    void cleanQuickStamps();
+    void eraseQuickStamp(int index);
 };
 
 } // namespace Internal

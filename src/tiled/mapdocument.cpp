@@ -22,6 +22,8 @@
 #include "mapdocument.h"
 
 #include "addremovelayer.h"
+#include "addremovetileset.h"
+#include "changeproperties.h"
 #include "isometricrenderer.h"
 #include "layermodel.h"
 #include "map.h"
@@ -31,8 +33,10 @@
 #include "orthogonalrenderer.h"
 #include "resizelayer.h"
 #include "resizemap.h"
+#include "tile.h"
 #include "tilelayer.h"
 #include "tilesetmanager.h"
+#include "tileset.h"
 
 #include <QRect>
 #include <QUndoStack>
@@ -65,16 +69,14 @@ MapDocument::MapDocument(Map *map, const QString &fileName):
 
     // Register tileset references
     TilesetManager *tilesetManager = TilesetManager::instance();
-    foreach (Tileset *tileset, mMap->tilesets())
-        tilesetManager->addReference(tileset);
+    tilesetManager->addReferences(mMap->tilesets());
 }
 
 MapDocument::~MapDocument()
 {
     // Unregister tileset references
     TilesetManager *tilesetManager = TilesetManager::instance();
-    foreach (Tileset *tileset, mMap->tilesets())
-        tilesetManager->removeReference(tileset);
+    tilesetManager->removeReferences(mMap->tilesets());
 
     delete mRenderer;
     delete mMap;
@@ -151,8 +153,8 @@ void MapDocument::addLayer(LayerType layerType)
         name = tr("Tile Layer %1").arg(mMap->tileLayerCount() + 1);
         layer = new TileLayer(name, 0, 0, mMap->size());
         break;
-    case ObjectLayerType:
-        name = tr("Object Layer %1").arg(mMap->objectLayerCount() + 1);
+    case ObjectGroupType:
+        name = tr("Object Layer %1").arg(mMap->objectGroupCount() + 1);
         layer = new ObjectGroup(name, 0, 0, mMap->size());
         break;
     }
@@ -262,6 +264,73 @@ void MapDocument::setTileSelection(const QRegion &selection)
         const QRegion oldTileSelection = mTileSelection;
         mTileSelection = selection;
         emit tileSelectionChanged(mTileSelection, oldTileSelection);
+    }
+}
+
+static Tileset *findSimilarTileset(const Tileset *tileset,
+                                   const QList<Tileset*> &tilesets)
+{
+    foreach (Tileset *candidate, tilesets) {
+        if (candidate != tileset
+            && candidate->imageSource() == tileset->imageSource()
+            && candidate->tileWidth() == tileset->tileWidth()
+            && candidate->tileHeight() == tileset->tileHeight()
+            && candidate->tileSpacing() == tileset->tileSpacing()
+            && candidate->margin() == tileset->margin())
+        {
+            return candidate;
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * Makes sure the all tilesets which are used at the given \a map will be
+ * present in the map document.
+ *
+ * To reach the aim, all similar tilesets will be replaced by the version
+ * in the current map document and all missing tilesets will be added to
+ * the current map document.
+ */
+void MapDocument::unifyTilesets(Map *map)
+{
+    QList<QUndoCommand*> undoCommands;
+    QList<Tileset*> existingTilesets = mMap->tilesets();
+    TilesetManager *tilesetManager = TilesetManager::instance();
+
+    // Add tilesets that are not yet part of this map
+    foreach (Tileset *tileset, map->tilesets()) {
+        if (existingTilesets.contains(tileset))
+            continue;
+
+        Tileset *replacement = findSimilarTileset(tileset, existingTilesets);
+        if (!replacement) {
+            undoCommands.append(new AddTileset(this, tileset));
+            continue;
+        }
+
+        // Merge the tile properties
+        const int sharedTileCount = qMin(tileset->tileCount(),
+                                         replacement->tileCount());
+        for (int i = 0; i < sharedTileCount; ++i) {
+            Tile *replacementTile = replacement->tileAt(i);
+            Properties properties = replacementTile->properties();
+            properties.merge(tileset->tileAt(i)->properties());
+            undoCommands.append(new ChangeProperties(tr("Tile"),
+                                                     replacementTile,
+                                                     properties));
+        }
+        map->replaceTileset(tileset, replacement);
+
+        tilesetManager->addReference(replacement);
+        tilesetManager->removeReference(tileset);
+    }
+    if (!undoCommands.isEmpty()) {
+        mUndoStack->beginMacro(tr("Tileset Changes"));
+        foreach (QUndoCommand *command, undoCommands)
+            mUndoStack->push(command);
+        mUndoStack->endMacro();
     }
 }
 

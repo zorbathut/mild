@@ -61,7 +61,7 @@ int Map::tileLayerCount() const
     return count;
 }
 
-int Map::objectLayerCount() const
+int Map::objectGroupCount() const
 {
     int count = 0;
     foreach (Layer *layer, mLayers)
@@ -74,6 +74,15 @@ void Map::addLayer(Layer *layer)
 {
     adoptLayer(layer);
     mLayers.append(layer);
+}
+
+int Map::indexOfLayer(const QString &layerName) const
+{
+    for (int index = 0; index < mLayers.size(); index++)
+        if (layerAt(index)->name() == layerName)
+            return index;
+
+    return -1;
 }
 
 void Map::insertLayer(int index, Layer *layer)
@@ -107,6 +116,11 @@ void Map::insertTileset(int index, Tileset *tileset)
     mTilesets.insert(index, tileset);
 }
 
+int Map::indexOfTileset(Tileset *tileset) const
+{
+    return mTilesets.indexOf(tileset);
+}
+
 void Map::removeTilesetAt(int index)
 {
     mTilesets.removeAt(index);
@@ -121,8 +135,7 @@ void Map::replaceTileset(Tileset *oldTileset, Tileset *newTileset)
         if (TileLayer *tileLayer = layer->asTileLayer())
             tileLayer->replaceReferencesToTileset(oldTileset, newTileset);
 
-    mTilesets.removeAt(index);
-    mTilesets.insert(index, newTileset);
+    mTilesets.replace(index, newTileset);
 }
 
 bool Map::isTilesetUsed(Tileset *tileset) const

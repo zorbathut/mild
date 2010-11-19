@@ -24,13 +24,12 @@
 #include "maprenderer.h"
 
 namespace Tiled {
-namespace Internal {
 
 /**
  * The orthogonal map renderer. This is the most basic map renderer,
  * dealing with maps that use rectangular tiles.
  */
-class OrthogonalRenderer : public MapRenderer
+class TILEDSHARED_EXPORT OrthogonalRenderer : public MapRenderer
 {
 public:
     OrthogonalRenderer(const Map *map) : MapRenderer(map) {}
@@ -62,7 +61,6 @@ public:
     QPointF tileToPixelCoords(qreal x, qreal y) const;
 };
 
-} // namespace Internal
 } // namespace Tiled
 
 #endif // ORTHOGONALRENDERER_H

@@ -8,7 +8,7 @@
 #
 
 # The list of supported translations
-LANGUAGES = nl pt es de pt_BR ja fr it cs lv
+LANGUAGES = nl pt es de pt_BR ja fr it cs lv zh
 
 # Helper function to adapt the slashes in a path to the system
 defineReplace(fixSlashes) {
@@ -37,7 +37,7 @@ TRANSLATIONS = $$prependAppend(LANGUAGES, $$PWD/tiled_, .ts)
 LUPDATE = $$fixSlashes($$[QT_INSTALL_BINS]/lupdate) -locations relative
 LRELEASE = $$fixSlashes($$[QT_INSTALL_BINS]/lrelease)
 
-ts.commands = cd .. && $$LUPDATE src -ts $$TRANSLATIONS
+ts.commands = cd $$PWD/.. && $$LUPDATE src -ts $$TRANSLATIONS
 QMAKE_EXTRA_TARGETS += ts
 
 win32 {
